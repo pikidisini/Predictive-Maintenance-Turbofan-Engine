@@ -34,46 +34,43 @@ Pada bagian ini, kita akan mengklarifikasi masalah yang dihadapi dan tujuan yang
 Pernyataan masalah latar belakang:
 - Bagaimana cara memprediksi kerusakan mesin turbofan pesawat secara akurat menggunakan data sensor yang tersedia, sehingga pemeliharaan dapat dilakukan secara tepat waktu untuk menghindari kerusakan tak terduga?
 
-- Bagaimana cara memilih dan menerapkan algoritma machine learning atau deep learning yang tepat untuk membangun model prediktif yang mampu mengenali pola degradasi mesin dengan tingkat akurasi yang tinggi?
+- Algortima Model Machine Learning apa yang paling optimal untuk melakukan prediksi pemeliharaan berdasarkan data sensor?
 
 ### Goals
 
 Tujuan dari pernyataan masalah:
-- Masalah utama yang dihadapi industri penerbangan adalah ketidakpastian dalam penjadwalan pemeliharaan mesin turbofan. Pemeliharaan yang terlalu sering atau terlambat dapat menyebabkan pemborosan biaya atau bahkan kerusakan fatal pada mesin. Oleh karena itu, diperlukan sistem yang dapat memprediksi kapan suatu mesin akan mengalami kerusakan berdasarkan data sensor yang tersedia.
+- Mengembangkan model machine learning yang dapat memprediksi kapan suatu mesin akan mengalami kerusakan berdasarkan data sensor yang tersedia.
 
-- Dalam analisis prediktif, pemilihan algoritma yang tepat sangat penting untuk memastikan model yang dihasilkan memiliki akurasi yang tinggi. Beberapa algoritma yang digunakan, seperti Convolutional Neural Networks (CNN), Long Short-Term Memory (LSTM), dan Random Forest, memiliki karakteristik berbeda dan dapat menghasilkan performa yang bervariasi. Memilih algoritma yang tepat dan menyesuaikan dengan dataset sangat penting untuk mencapai hasil yang optimal.
+- Mendapatkan hasil terbaik dari perbandingan performa algoritma yang digunakan, seperti Convolutional Neural Networks (CNN), Long Short-Term Memory (LSTM).
 
     ### Solution statements
     - Menggunakan dataset CMAPSS untuk membangun model yang dapat memprediksi waktu ke depan sampai terjadinya kerusakan, dengan akurasi prediksi yang tinggi, sehingga pemeliharaan mesin bisa dilakukan tepat waktu.
     
-    - Mengidentifikasi dan memilih algoritma yang memberikan performa terbaik dalam memprediksi degradasi mesin, dan membangun model dengan akurasi lebih dari 85% dalam mengklasifikasikan tingkat kerusakan mesin. Mengintegrasikan Long Short-Term Memory (LSTM), yang sangat baik dalam menangani data urutan waktu, untuk memprediksi kapan mesin akan gagal berdasarkan urutan waktu degradasi.
+    - Mengidentifikasi dan memilih algoritma yang memberikan performa terbaik dalam memprediksi degradasi mesin, dan membangun model dengan akurasi lebih dari 85% dalam mengklasifikasikan tingkat kerusakan mesin. Membandingkan performa Convolutional Neural Networks (CNN) dan Long Short-Term Memory (LSTM), untuk memprediksi kapan mesin akan gagal berdasarkan urutan waktu degradasi.
     
-    - Akurasi model dalam memprediksi waktu kegagalan dan tingkat kerusakan mesin. Metrik yang digunakan bisa berupa Mean Absolute Error (MAE), Root Mean Squared Error (RMSE), dan F1-Score untuk klasifikasi kerusakan mesin.
+    - Akurasi model dalam memprediksi waktu kegagalan dan tingkat kerusakan mesin. Metrik yang digunakan berupa Mean Absolute Error (MAE), Root Mean Squared Error (RMSE), dan F1-Score untuk klasifikasi kerusakan mesin.
 
 ## Data Understanding
-Pada tahap ini, kita akan membahas informasi mengenai data yang digunakan dalam proyek ini, yaitu NASA Turbofan Engine Degradation Simulation (CMAPSS) dataset. Dataset ini dirancang untuk tujuan penelitian terkait pemeliharaan prediktif pada mesin turbofan pesawat terbang. Dataset ini dapat diunduh melalui situs resmi NASA Prognostics Center of Excellence atau melalui platform lainnya yang menyediakan akses ke dataset CMAPSS.
+NASA Turbofan Engine Degradation Simulation (CMAPSS) dataset dirancang untuk tujuan penelitian terkait pemeliharaan prediktif pada mesin turbofan pesawat terbang. Dataset ini dapat diunduh melalui situs resmi NASA Prognostics Center of Excellence atau melalui platform lainnya yang menyediakan akses ke dataset CMAPSS. Dataset CMAPSS terdiri dari data simulasi yang menggambarkan operasi mesin turbofan pada berbagai kondisi. Data ini mengandung informasi yang dihasilkan oleh berbagai sensor mesin selama masa operasional, yang mencatat degradasi mesin pada berbagai tingkat keparahan. 
+- **Sumber dataset:** [NASA Turbofan Engine Degradation Simulation C-MAPSS](https://www.kaggle.com/datasets/behrad3d/nasa-cmaps/data).
+- **Jumlah Dataset:** berisi 26 kolom dengan 20.630 baris data.
+- **Missing Value:** Tidak terdapat missing value pada dataset ini
+- **Duplicate Rows:** Tidak terdapat duplicate rows pada dataset ini.
+- **File:** Dataset ini terdiri dari 4 data latih, 4 data test, dan 4 data RUL. Masing masing data tersebut mewakili kondisi yang berbeda. Namun pada proyek ini hanya akna digunakan 1 kondisi saja dengan nama file FD001.
 
-Sumber: [NASA Turbofan Engine Degradation Simulation C-MAPSS](https://www.kaggle.com/datasets/behrad3d/nasa-cmaps/data).
-
-**Deskripsi Umum Dataset:**
-Dataset CMAPSS terdiri dari data simulasi yang menggambarkan operasi mesin turbofan pada berbagai kondisi. Data ini mengandung informasi yang dihasilkan oleh berbagai sensor mesin selama masa operasional, yang mencatat degradasi mesin pada berbagai tingkat keparahan. Data simulasi ini digunakan untuk membangun model prediksi yang mampu memprediksi kapan mesin akan mengalami kerusakan.
-
-Dataset CMAPSS terbagi menjadi beberapa bagian, yang masing-masing mencakup data untuk tiga jenis skenario degradasi yang berbeda, serta dua jenis data (train dan test).
-
-### Variabel-variabel pada NASA Turbofan Engine Degradation Simulation C-MAPSS adalah sebagai berikut:
+Variabel-variabel pada NASA Turbofan Engine Degradation Simulation C-MAPSS adalah sebagai berikut:
 - **unit_number** : Menunjukkan identitas unik untuk setiap mesin yang diuji.
 - **time_in_cycles** : Urutan waktu/siklus terbang (1, 2, 3, … hingga rusak)
 - **operational_setting_1-3** : Kondisi operasional (misalnya tekanan, suhu lingkungan, dll. Namun tidak dijelaskan secara detail oleh NASA)
 - **sensor_1** s/d **sensor_21**: Data dari berbagai sensor internal mesin (getaran, suhu, tekanan, dll)
 
-## Exploratory Data Analysis
-Pada tahap ini, akan menggali lebih jauh mengenai informasi yang dapat diperoleh dari dataset.
+### Exploratory Data Analysis
 
 **1. Ekstrak informasi Data.**
 - Menampilkan informasi data, seperti nama kolom, tipe data setiap fitur, jumlah kolom dan jumlah baris.
 
 **2. Melihat Distribusi Data Siklus Mesin.**
-- ata-rata Waktu Hidup Mesin (mean): Rata-rata waktu hidup mesin adalah sekitar 206 siklus, dengan rentang nilai antara 128 hingga 362 siklus.
+- Rata-rata Waktu Hidup Mesin (mean): Rata-rata waktu hidup mesin adalah sekitar 206 siklus, dengan rentang nilai antara 128 hingga 362 siklus.
 - Variasi Waktu Hidup Mesin (std): Ada variasi yang cukup besar (sekitar 46 siklus) antara mesin yang memiliki waktu hidup pendek dan panjang.
 - Median (50%): Nilai median dari waktu hidup mesin adalah 199 siklus, yang sedikit lebih rendah dari rata-rata, menunjukkan bahwa sebagian besar mesin memiliki waktu hidup yang relatif lebih pendek daripada rata-rata.
 - Distribusi: Dalam histogram, Anda dapat melihat bahwa sebagian besar mesin cenderung gagal dalam rentang 170-230 siklus, dengan beberapa mesin yang memiliki waktu hidup yang jauh lebih panjang, mendekati nilai maksimum 362 siklus.
